@@ -30,31 +30,6 @@ char ** parseLine() {
   char ** bucket;		//array that holds all instruction tokens
   int i, j, start, end;
   prompt();
-  /*fgets(instruction, 255, stdin);
-  //For loop counts spaces so that we know how many tokens are needed
-  for(i = 0, j = 1; i < strlen(instruction); i++)
-    {
-      if(instruction[i] == ' ')
-	j++;
-    }
-  //Allocates memory needed for bucket
-  bucket = (char **) malloc((j + 1) * sizeof(char*));
-  //For loop goes through every word and copies them into bucket
-  for(i = 0, start = 0, end = 0; i < j; end++)
-    {
-      if(instruction[end] == ' ' || instruction[end] == '\n')
-	{
-	  if(start != end)
-	    {
-	      bucket[i] = (char *) malloc((end - start) * sizeof(char));
-	      strncpy(bucket[i], instruction + start, end - start);
-	    }
-	  start = end + 1;
-	  i++;
-	}
-    }
-    bucket[j] = NULL; //Null pointer at end of bucket used to identify bucket size*/
-
   bucket = (char **) malloc(1 * sizeof(char **));
   bucket[0] = NULL;
   do{
