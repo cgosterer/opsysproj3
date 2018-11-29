@@ -1,3 +1,4 @@
+// structs
 typedef struct fatstruct{
 int firstdatasec;		// first data sector
 int BPB__BytsPerSec;		// count of bytes per sector
@@ -8,25 +9,36 @@ int BPB_FATSz32;		// This field is the FAT32 32-bit count of sectors occupied by
 int BPB_RootClus;
 }fatstruct;
 
-struct fatstruct fs;			// our variable for a fatstruct that stores all necessary info about file system
-FILE * gfp;				// the global file pointer(gfp)?
-
 typedef struct dir			// directory struct;
 {
-	int d;
+	int numfiles;			// number of files in driectory
 
 
 }dir;
 
-typedef struct openfile			// file struct
+typedef struct file			// file struct
 {
 	char fname[60];			// im assuming we are going to need filename in this struct at some point
 	int firstclusnum;
-	int  writemode;			// 1 for read 2 for write 3 for read and write
+	int mode;			// 1 for read 2 for write 3 for read and write
+	int fattr;			// file attribute
+	int size;			// fiel size
 
-}openfile;
+}file;
 
-void exit()		// exits the program and frees memory
+
+// global variables
+struct fatstruct fs;                    // our variable for a fatstruct that stores all necessary info about file system
+FILE * gfp;                             // the global file pointer(gfp)?
+
+
+int  firstsecclus(int clus)							// finds first "data" sector of cluster clus
+{
+	return fs.firstdatasec  + ((clus - 2) * fs.BPB_SecPerClus)		// staright form slides part 1
+}
+
+// functions
+void exit()				// exits the program and frees memory
 {
 
 }
@@ -59,7 +71,7 @@ void info()				// gets the info per first function in slides
 	fs.BPB_NumFATs = getinfo(16,1);
 	fs.BPB_FATSz32 = getinfo(36,4);
 	fs.BPB_RootClus = getinfo(44,4);
-	fs.firstdatasec = fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs +  fs.BPB_FATSz32  );
+	fs.firstdatasec = fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs + fs.BPB_FATSz32);
 
 					// now for printing
 	printf("BPB__BytsPerSec: %d\n", fs.BPB__BytsPerSec);
@@ -70,22 +82,19 @@ void info()				// gets the info per first function in slides
 	printf("BPB_RootClus: %d\n", fs.BPB_RootClus);
 }
 
-void cd( char * dirname)	// change directory to dirname
+void cd( char * dirname)				// change directory to dirname
 {
 
 
 }
 
-
-}
-
-void ls()			// basic ls command like usual command line
+void ls()						// basic ls command like usual command line
 {
 
 
 }
 
-void read(char * fname)			// read file with filename fname
+void read(char * fname)					// read file with filename fname
 {
 	// the basic read function
 }
