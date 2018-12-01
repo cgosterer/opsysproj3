@@ -1,18 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "./fatheader.h"
 
 char ** parseLine();
 char ** addToken(char ** bucket, char * token);
-int executeCommand(char ** tokens);
+int executeCommand(char ** tokens, FILE * disk);
 void freebucket(char ** tokens);
 void prompt();
 
 int main() {
   char ** tokens;
+  FILE * disk;
+
+  disk = fopen("fat32.img", "rb+");
+  
   while(1) { //Infinite loop until break condition
     tokens = parseLine();
-    if(executeCommand(tokens)) //Execute Command returns 1 only on exit
+    if(executeCommand(tokens, disk)) //Execute Command returns 1 only on exit
       break;
     freebucket(tokens);
     tokens = 0;
@@ -66,12 +71,13 @@ void freebucket(char ** bucket)
   bucket = NULL;
 }
 
-int executeCommand(char ** tokens)
+int executeCommand(char ** tokens, FILE * disk)
 {
   printf("Executing command %s\n", tokens[0]);
   if(strcmp(tokens[0], "exit") == 0)
     {
       freebucket(tokens);
+      fclose(disk);
       return 1;
     }
   return 0;
