@@ -5,7 +5,7 @@
 
 char ** parseLine();
 char ** addToken(char ** bucket, char * token);
-int executeCommand(char ** tokens, FILE * disk);
+int executeCommand(char ** tokens, FILE * disk, fatstruct boot);
 void freebucket(char ** tokens);
 void prompt();
 
@@ -14,10 +14,10 @@ int main() {
   FILE * disk;
 
   disk = fopen("fat32.img", "rb+");
-  
+  fatstruct boot = getInfo(disk);
   while(1) { //Infinite loop until break condition
     tokens = parseLine();
-    if(executeCommand(tokens, disk)) //Execute Command returns 1 only on exit
+    if(executeCommand(tokens, disk, boot)) //Execute Command returns 1 only on exit
       break;
     freebucket(tokens);
     tokens = 0;
@@ -71,7 +71,7 @@ void freebucket(char ** bucket)
   bucket = NULL;
 }
 
-int executeCommand(char ** tokens, FILE * disk)
+int executeCommand(char ** tokens, FILE * disk, fatstruct boot)
 {
   printf("Executing command %s\n", tokens[0]);
   if(strcmp(tokens[0], "exit") == 0)
@@ -79,6 +79,10 @@ int executeCommand(char ** tokens, FILE * disk)
       freebucket(tokens);
       fclose(disk);
       return 1;
+    }
+  else if(strcmp(tokens[0], "info") == 0)
+    {
+      info(boot);
     }
   return 0;
 }

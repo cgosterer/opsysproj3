@@ -3,7 +3,8 @@
 
 int  firstsecclus(fatstruct fs, int clus)							// finds first "data" sector of cluster clus
 {
-  return fs.firstdatasec  + ((clus - 2) * fs.BPB_SecPerClus);		// staright form slides part 1
+  int firstdatasec =  fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs + fs.BPB_FATSz32);
+  return firstdatasec  + ((clus - 2) * fs.BPB_SecPerClus);		// staright form slides part 1
 }
 
 int getData(FILE * gfp, int offset, int size)	// actually gets the info, given an offset and a size given in fatspec
@@ -29,13 +30,16 @@ fatstruct getInfo(FILE * gfp)				// gets the info per first function in slides
 {
 					// need to use the offset and the size to get each one of these per the fatspec
 	fatstruct fs;
+	fatstruct * fp = &fs;
+	fread(fp, sizeof(fatstruct), 1, gfp);
+	/*
 	fs.BPB__BytsPerSec = getData(gfp, 11,2);
 	fs.BPB_SecPerClus = getData(gfp, 13,1);
 	fs.BPB_RsvdSecCnt = getData(gfp, 14,2);
 	fs.BPB_NumFATs = getData(gfp, 16,1);
 	fs.BPB_FATSz32 = getData(gfp, 36,4);
 	fs.BPB_RootClus = getData(gfp,44,4);
-	fs.firstdatasec = fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs + fs.BPB_FATSz32);
+	*/
 	return fs;
 }
 

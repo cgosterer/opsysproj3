@@ -1,13 +1,24 @@
 // structs
 typedef struct fatstruct{
-int firstdatasec;		// first data sector
-int BPB__BytsPerSec;		// count of bytes per sector
-int BPB_SecPerClus;		// number of sectors per allocation unit
-int BPB_RsvdSecCnt;		// Number of reserved sectors in the Reserved region of the volumestarting at the first sector of the volume.
-int BPB_NumFATs;		// The count of FAT data structures on the volume.
-int BPB_FATSz32;		// This field is the FAT32 32-bit count of sectors occupied by ONE FAT
-int BPB_RootClus;
-}fatstruct;
+  int BS_jmpBoot:24;		// Unused for project
+  char BS_OEMName[8];		// Unused for project
+  int BPB__BytsPerSec:16;	// count of bytes per sector
+  int BPB_SecPerClus:8;		// number of sectors per allocation unit
+  int BPB_RsvdSecCnt:16;       	// Number of reserved sectors in the Reserved region of the volumestarting at the first sector of the volume
+  int BPB_NumFATs:8;		// The count of FAT data structures on the volume.
+  int BPB_RootEntCnt:16;	// Unused by FAT32
+  int BPB_TotSec16:16;		// Unused by FAT32
+  int BPB_Media:8;		// Unused for project
+  int BPB_FATSz16:16;		// Unused by FAT32
+  int BPB_SecPerTrk:16;		// Unused for project
+  int BPB_NumHeads:16;		// Unused for project
+  int BPB_HiddSec:32;		// Unused for project
+  int BPB_TotSec32:32;		// Total number of sectors
+  int BPB_FATSz32:32;		// This field is the FAT32 32-bit count of sectors occupied by ONE FAT
+  int BPB_ExtFlags:16;		// Unused for project
+  int BPB_FSVer:16;		// File System Version Number
+  int BPB_RootClus:32;		// Cluster number of first cluster of root (should be 2)
+}__attribute__((packed, aligned(1))) fatstruct;
 
 typedef struct dir			// directory struct;
 {
