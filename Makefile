@@ -6,3 +6,7 @@ driver.o: driver.c fatheader.h
 
 info.o: info.c fatheader.h
 	gcc -c info.c
+
+clean:
+	rm *~ *.o fileSys.exe
+	cp ~/Downloads/fat32.img ./
