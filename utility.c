@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "./fatheader.h"
 
-struct openfile openfiles[100];
+struct openfile openfiles[100000];
 int opencounter= 0;
 
 char * goupper(char * s)	                                        // the directory names must be in upper case when stored in file system in utility.c
@@ -58,10 +58,10 @@ bool removeCluster(int n)		// delete na nd all clusters after n, ste data to all
 }
 
 // jons functions
-bool openFile(char * fname, char * mode)			//probably need to make an open file struct with both name and mode
+bool openFile( char * fname, char * mode)			//probably need to make an open file struct with both name and mode
 {
 	int x;
-	for (x = 0; x < 100; x++)
+	for (x = 0; x < 100000; x++)
 	{
 		if(strcmp(openfiles[x].name,"\0") == 0)
 		{
@@ -76,7 +76,7 @@ bool openFile(char * fname, char * mode)			//probably need to make an open file 
 bool closeFile(char * fname)
 {
 	int x = 0;
-	for (x = 0; x < 100; x++)
+	for (x = 0; x < 100000; x++)
 	{
 		if(strcmp(openfiles[x].name,fname) == 0)
 		{
@@ -88,22 +88,26 @@ bool closeFile(char * fname)
 	return false;
 }
 
-bool canRead(FILE * disk, int clus)
+bool canRead(FILE * disk, char * name, fatstruct fs, int currdir)
 {
-
-
+	int x;				// needs rework
+	for(x=0; x< 100000; x++)
+	{
+		x = 5;
+	}
 	return true;
 }
 
 
-bool canWrite(FILE * disk,fatstruct fs, int clus)
+bool canWrite(FILE * disk, char * name, fatstruct fs, int cwd )		// needs to be reworked
 {
 	shortDirEntry sh;
-	int FatOffset = clus * 4;
+	//int FatOffset = clus * 4;
+	int FatOffset = 8;		// temproary fix to avoid compiler error real value is above
         int ThisFatSecNum = fs.BPB_RsvdSecCnt + (FatOffset / fs.BPB_BytsPerSec);
         int ThisFatEntOffset = FatOffset % fs.BPB_BytsPerSec;
         int byteaddress = (ThisFatSecNum * fs.BPB_BytsPerSec) + ThisFatEntOffset;
-        //fsetpos(disk, byteaddress);		// set position of disk *
+	fseek(disk, 32, SEEK_SET);
         fread(&sh,sizeof(shortDirEntry), 1, disk);
 
 	if(sh.Attr == 1)
@@ -148,17 +152,17 @@ int fnextclus( FILE * disk, int cluster, fatstruct fs)					// get next clsuter u
 	return *nclus;
 }
 
-void open(FILE * disk, fatstruct fs,fileData fd,  char * mode)
-{
-	openFile(fd.fileName, mode);
-}
+//void open(FILE * disk, fatstruct fs,fileData fd,  char * mode)
+//{
+//	openFile(fd.fileName, mode);
+//}
 
-void close(FILE * disk, fatstruct fs, char * fname)
-{
-	closeFile(fname);
-	opencounter--;
+//void close(FILE * disk, fatstruct fs, char * fname)
+//{
+//	closeFile(fname);
+//	opencounter--;
 
-}
+//}
 
 
 
