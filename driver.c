@@ -12,6 +12,9 @@ void prompt();
 int main() {
   char ** tokens;
   FILE * disk;
+  int currentdirclus;             // int for the cluster of current directory
+  directory cwd;                  // the current working directory
+
 
   disk = fopen("fat32.img", "rb+");
   fatstruct boot = getInfo(disk);
