@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "./fatheader.h"
 
-int  firstsecclus(fatstruct fs, int clus)							// finds first "data" sector of cluster clus
+int  firstSecClus(fatstruct fs, int clus)							// finds first "data" sector of cluster clus
 {
   int firstdatasec =  fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs + fs.BPB_FATSz32);
   return firstdatasec  + ((clus - 2) * fs.BPB_SecPerClus);		// staright form slides part 1
@@ -45,7 +45,7 @@ fatstruct getInfo(FILE * gfp)				// gets the info per first function in slides
 
 void info(fatstruct fs){
 	// now for printing
-	printf("BPB__BytsPerSec: %d\n", fs.BPB__BytsPerSec);
+	printf("BPB_BytsPerSec: %d\n", fs.BPB_BytsPerSec);
 	printf("BPB_SecPerClus: %d\n", fs.BPB_SecPerClus);
 	printf("BPB_RsvdSecCnt: %d\n", fs.BPB_RsvdSecCnt);
 	printf("BPB_NumFATs: %d\n", fs.BPB_NumFATs);
