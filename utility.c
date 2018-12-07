@@ -116,12 +116,12 @@ int f32_readFAT(int cluster, int *value, fatstruct fs)
 int fnextclus( FILE * disk, int cluster, fatstruct fs)
 {
 	int FatOffset = cluster * 4;
-	int ThisFATSecNum = fs.BPB_ResvdSecCnt + (FatOffset / fs.BPB_BytsPerSec);
+	int ThisFatSecNum = fs.BPB_RsvdSecCnt + (FatOffset / fs.BPB_BytsPerSec);
 	int ThisFatEntOffset = FatOffset % fs.BPB_BytsPerSec;
-	int byteaddress = (ThisFatSecNum * fs.BytsPerSec) + ThisFatEntOffset;
+	int byteaddress = (ThisFatSecNum * fs.BPB_BytsPerSec) + ThisFatEntOffset;
 	int nclus;
-	fsetpos(disk, &byteaddress);
-	fread(&nclus,sizeof(int), 1, &disk);
+	//fsetpos(disk, &byteaddress);
+	//fread(&nclus,sizeof(int), 1, &disk);
 	return nclus;
 
 }

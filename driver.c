@@ -37,10 +37,20 @@ char ** parseLine() {
   char instruction[INST_SIZE];	//holds instruction
   char ** bucket;		//array that holds all instruction tokens
   int i, j, start, end;
+  char removechar;
   prompt();
   bucket = (char **) malloc(1 * sizeof(char **));
   bucket[0] = NULL;
   do{
+	//if (getchar() == '"')
+	//{
+		//scanf("%c", &removechar);
+		//scanf(%[^\"]\"\"%[^\"]\"", instruction);
+		//scanf(  "%[^"]s", instruction);			// may need double quote here
+	        //bucket = addToken(bucket, instruction);
+		//continue;
+	//}
+
     scanf("%s", instruction);
     bucket = addToken(bucket, instruction);
   } while(getchar() != '\n');
