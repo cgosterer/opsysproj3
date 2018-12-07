@@ -42,17 +42,25 @@ char ** parseLine() {
   bucket = (char **) malloc(1 * sizeof(char **));
   bucket[0] = NULL;
   do{
-	//if (getchar() == '"')
-	//{
-		//scanf("%c", &removechar);
-		//scanf(%[^\"]\"\"%[^\"]\"", instruction);
-		//scanf(  "%[^"]s", instruction);			// may need double quote here
-	        //bucket = addToken(bucket, instruction);
-		//continue;
-	//}
-
-    scanf("%s", instruction);
-    bucket = addToken(bucket, instruction);
+    //    printf("Loop\n");
+    removechar = getchar();
+    if (removechar == '"')
+      {
+	//	printf("if\n");
+	//scanf("%c", &removechar);
+	//scanf(%[^\"]\"\"%[^\"]\"", instruction);
+	scanf(  "%[^\"]\"", instruction);// may need double quote here
+	bucket = addToken(bucket, instruction);
+	printf("Grabbed Token %s\n", instruction);
+	continue;
+      }
+    else
+      {
+	//printf("else\n");
+	ungetc(removechar, stdin);
+	scanf("%s", instruction);
+	bucket = addToken(bucket, instruction);
+      }
   } while(getchar() != '\n');
   return bucket;
 }

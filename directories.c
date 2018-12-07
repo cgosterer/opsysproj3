@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "fatheader.h"
 
 //Concatinates long directory entry name onto important
@@ -90,7 +91,7 @@ int getFileName(char * destination, FILE * disk, dirEntry file)
 
 //Gets the information on a file given the filename and pointer to cluster of a directory, returns empty data if filename isn't in this cluster
 //Leaves disk pointing to first directory entry of file (important for long entries)
-fileData getFileFromDir(char * filename, FILE * disk, int clusterSize)
+fileData getFileFromCluster(char * filename, FILE * disk, int clusterSize)
 {
   dirEntry file;
   char checkName[260];
@@ -99,7 +100,7 @@ fileData getFileFromDir(char * filename, FILE * disk, int clusterSize)
   
   for(i = 0; i <= 260; i++)
     ret.fileName[i] = '\0';
-  ret.size = 0;
+  ret.size = -1;
   ret.firstCluster = 0;
   ret.attr = 0;
   
@@ -128,12 +129,12 @@ fileData getFileFromDir(char * filename, FILE * disk, int clusterSize)
   return ret;
 }
 
-//Removes Directory entry from directory cluster
+//Removes Directory entry from directory
 //Returns 0 on success, -1 on failure (file not in cluster)
-int removeDirectoryEntry(char * filename, FILE * disk, int clustersize)
+int removeDirectoryEntry(char * filename, FILE * disk, int clustersize, int directoryCluster, fatstruct fs)
 {
   //getFileData leaves the file pointer where we need it, and tells us whether the file was actually in this cluster
-  fileData fd = getFileFromDir(filename, disk, clustersize);
+  fileData fd = getFileFromDir(filename, disk, clustersize, directoryCluster, fs);
   dirEntry cleared;
   dirEntry check;
   int i;
@@ -187,4 +188,53 @@ int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDir
     return -1;
   fwrite(&insert, 32, 1, disk);
   return 0;
+}
+
+fileData getFileFromDir(char * filename, FILE * disk, int clusterSize, int firstCluster, fatstruct fs)
+{
+  fileData fd;
+  do
+  {
+    moveToCluster(disk, firstCluster, fs);
+    fd = getFileFromCluster(filename, disk, clusterSize);
+    if(strcmp(fd.fileName, filename) == 0)
+      {
+	return fd;
+      }
+    else
+      firstCluster = nextCluster(firstCluster);
+  } while(firstCluster != 0xFFFFFFFF);
+}
+
+fileData getFileData(char* filename, FILE * disk, fatstruct fs, int currentDirectory)
+{
+  int i, newDir;
+  char * subName;
+  fileData fd;
+  for(i = 0; i < strlen(filename) && filename[i] != '/'; i++){}
+  if(i == strlen(filename))
+    {
+      return getFileFromDir(filename, disk, fs.BPB_SecPerClus * fs.BPB_BytsPerSec, currentDirectory, fs);
+    }
+  else
+    {
+      subName = (char *) malloc(sizeof(char) * (i + 1));
+      strncpy(subName, filename, i);
+      fd = getFileData(subName, disk, fs, currentDirectory);
+      free(subName);
+      if((fd.attr%32)>>4 == 1)
+	{
+	  newDir = fd.firstCluster;
+	  return getFileData(filename + i, disk, fs, newDir);
+	}
+      else
+	{
+	  //Path included non directory, return error data
+	  fd.fileName[0] = '\0';
+	  fd.size = -1;
+	  fd.firstCluster = 0;
+	  fd.attr = 0;
+	  return fd;
+	}
+    }
 }

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "./fatheader.h"
 
@@ -18,12 +19,6 @@ char * goupper(char * s)	                                        // the director
 int isbitset(char ch, int x)                                            // checks if the x bit is set to 1 in utility.c file
 {
         return ((1 << x) & ch);
-}
-
-int getsecaddr(int sector, fatstruct f)                                         // need to pass in boot here for the boot sector info move to utility.c
-{
-        int ret = sector * (f.BPB_BytsPerSec * f.BPB_SecPerClus);
-        return ret;
 }
 
 char * noquotes(char * s)
@@ -160,5 +155,10 @@ void close(FILE * disk, fatstruct fs, char * fname)
 
 }
 
-
-
+void moveToCluster(FILE * disk, int cluster, fatstruct fs)
+{
+  int address = fs.BPB_RsvdSecCnt + (fs.BPB_NumFATs * fs.BPB_FATSz32);
+  address += ((cluster-2) * fs.BPB_SecPerClus);
+  address *= fs.BPB_BytsPerSec;
+  fseek(disk, address, SEEK_SET);
+}

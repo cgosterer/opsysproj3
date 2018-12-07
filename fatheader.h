@@ -97,20 +97,19 @@ typedef struct openfile
 }openfile;
 
 
-fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
-int removeDirectoryEntry(char * filename, FILE * disk, int clustersize);
+fileData getFileFromDir(char * filename, FILE * disk, int clusterSize, int directoryCluster, fatstruct fs);
+int removeDirectoryEntry(char * filename, FILE * disk, int clustersize, int directoryCluster, fatstruct fs);
 int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDirEntry insert);
-fileData getFileData(char * filename, FILE * disk, fatstruct fs, int currentDirectory);
+fileData getFileData(char * pathname, FILE * disk, fatstruct fs, int currentDirectory);
 
 //utility functions
 int isbitset(char ch, int x);
-int getsecaddr(int sector, fatstruct f);                                // need to pass in boot here for the boot sector info move to utility.c
 char * goupper(char * s);
 char * noquotes(char * s);
 int  firstSecClus(fatstruct fs, int clus); 				// finds first "data" sector of cluster clus
 int getData(FILE * gfp, int offset, int size); 				// actually gets the info, given an offset and a size given in fatspec
 fatstruct getInfo(FILE * gfp); // get info from boot section needed for rest of program
-
+void moveToCluster(FILE * disk, int cluster, fatstruct fs); //Moves disk to cluster number in data section
 int nextCluster(int n);
 bool addCluster(int end, int n );
 bool removeCluster(int n);
@@ -125,33 +124,6 @@ int fnextclus( FILE * disk, int cluster, fatstruct fs);
 
 void info(fatstruct fs); // displays the info per first function in slides
 int cd(char * dirname, fatstruct f); //Change directory to dirname, returns first cluster of directory
-/*{
-	file * next;
-	if(currentdirclus == 0)
-	{
-		currentdirclus = f.BPB_RootClus;
-		cwd = getdir(currentdirclus, f);
-	}
-
-	dirname =  goupper(dirname);
-	next = findfile(dirname);
-	if(next = NULL)
-	{
-		printf("Directory is not in current directory\n");
-		return 0;
-	}
-
-	if(isbitset(next->fattr,4))
-	{
-		printf("Not a directory\n");
-		return 0;
-	}
-
-	currentdirclus = next->firstclusnum;
-	clearcwd();
-	cwd = getdir(currentdirclus, f);
-
-}*/
 int ls(FILE * disk, fatstruct fs, char * dirname); // basic ls command like usual command line removed int currentdir from parameter list
 void read(FILE * disk, fatstruct fs, char * fname); // read file with filename fname
 void readsize(FILE * disk, fatstruct fs, char * fname, int offset, int size); // read filename at offset , read size bytes from offset
@@ -164,76 +136,4 @@ void mkdir(FILE * disk, fatstruct fs, char * dname); // create directory with dn
 void rm(FILE * disk, fatstruct fs, char * fname); // remove file fname
 void rmdir(FILE * disk, fatstruct fs, char * dname); // remove directory dname
 int size(FILE * disk, fatstruct fs, char * fname); // prints size of the filename passed in
-/*{
-	file * f;
-	if(currentdirclus == 0)
-	{
-		currentdirclus = fs.BPB_RootClus;
-		cwd = getdir(currentdirclus, fs);
-	}
-
-	fname = goupper(fname);
-	f = findfile(fname);
-	if (f == NULL)
-	{
-		printf("File Not found in Current Directory\n");
-		return 0;
-	}
-	printf("Size of the file %s is %d", fname, f->size);
-	return 1;
-
-}*/
-
-//int ls( FILE * disk, fatstruct boot, char * dirname, int currentdir);
-/*{
-	file * next;
-	if (currentdirclus == 0)
-	{
-		currentdirclus = boot.BPB_RootClus;
-		cwd = getdir( currentdirclus, boot);
-	}
-
-	fflush(disk);
-	dirname = goupper(dirname);
-
-	if(cwd.numfiles == 0)						// if cwd is empty
-	{
-		printf("The current directory is empty");
-		return 0;
-	}
-
-	if( currentdirclus = boot.BPB_RootClus && strcmp(dirname, ".") == 0 )
-	{
-		printdir(cwd);
-		return 1;
-	}
-
-	next = findfile(dirname);
-
-	if (next == NULL)
-	{
-		printf("Not found in directory");
-		return 0;
-	}
-
-	if(!isbitset(next->fattr,4))
-	{
-		printf("Error Not a Directory");
-		return 0;
-	}
-	printdir(getdir(next->firstclusnum, boot));
-}*/
-
-
 int findopenfile(char * fname);						// finds a file in the open file list
-/*{
-        file * temp;
-        int x;
-        for (x=0; x < cwd.numfiles; x++)
-        {
-                temp = &cwd.filesindir[x];
-                if(strcmp(fname, temp->fname) == 0)
-                        return x;
-        }
-        return -1;
-}*/
