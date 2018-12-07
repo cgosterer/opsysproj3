@@ -13,7 +13,7 @@ int main() {
   char ** tokens;
   FILE * disk;
   int currentdirclus;             // int for the cluster of current directory
-  directory cwd;                  // the current working directory
+  int cwd;                  // the current working directory's cluster number
 
 
   disk = fopen("fat32.img", "rb+");

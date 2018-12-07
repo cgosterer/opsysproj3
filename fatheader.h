@@ -92,12 +92,10 @@ typedef struct fileData
 fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
 
 //utility functions
-void printdir(directory d);
 int isbitset(char ch, int x);
 int getsecaddr(int sector, fatstruct f);                                // need to pass in boot here for the boot sector info move to utility.c
 char * goupper(char * s);
 char * noquotes(char * s);
-directory getdir( int clustnum, fatstruct f);
 int  firstSecClus(fatstruct fs, int clus); 				// finds first "data" sector of cluster clus
 int getData(FILE * gfp, int offset, int size); 				// actually gets the info, given an offset and a size given in fatspec
 fatstruct getInfo(FILE * gfp); // get info from boot section needed for rest of program
@@ -154,7 +152,6 @@ void creat(FILE * disk, fatstruct fs, char * fname); // create file with fname
 void mkdir(FILE * disk, fatstruct fs, char * dname); // create directory with dname
 void rm(FILE * disk, fatstruct fs, char * fname); // remove file fname
 void rmdir(FILE * disk, fatstruct fs, char * dname); // remove directory dname
-void showdir(FILE * disk , directory dir);              // probably wont need disk here?
 int size(FILE * disk, fatstruct fs, char * fname); // prints size of the filename passed in
 /*{
 	file * f;
@@ -174,40 +171,6 @@ int size(FILE * disk, fatstruct fs, char * fname); // prints size of the filenam
 	printf("Size of the file %s is %d", fname, f->size);
 	return 1;
 
-}*/
-
-directory getdir(int clustnum, fatstruct f);					// pass boot in here need the info gets the contents of a directory files and sub directories included
-/*{	file dirfile;								// to be used as a file in the directory
-	int totalbytes = (f.BPB_BytsPerSec * f.BPB_SecPerClus);
-	directory retdir;							// dir to be returned
-	int firstdirsec;							// first sector of directory
-	int addrdir;								// address of the directory
-	int hiloclus;
-	int filecount;								// count of file in each directory
-
-	firstdirsec = firstSecClus(f,clustnum);
-	addrdir = getsecaddr(firstdirsec, f);
-
-	directory ds;
-        directory * dp = &ds;
-	int x;
-	for(x = 0; x < totalbytes; x+=32)
-	{
-        	fread(dp, sizeof(directory), 1, disk);
-		if( dp->DIR_Attr == 15)						// skip long entries for now
-			continue;
-
-		dp->DIR_FstClusHI << 16;
-		hiloclus = dp->DIR_FstClusHI | dp->DIR_FstClusLO;
-		strcpy(dirfile.fname, dp->DIR_Name);
-		dirfile.firstclusnum = hiloclus;
-		dirfile.size = dp->DIR_FileSize;
-		dirfile.fattr = dp->DIR_Attr;
-		retdir.filesindir[filecount++] = dirfile;
-	}
-
-	retdir.numfiles = filecount;
-	return retdir;
 }*/
 
 //int ls( FILE * disk, fatstruct boot, char * dirname, int currentdir);
@@ -263,5 +226,3 @@ int findopenfile(char * fname);						// finds a file in the open file list
         }
         return -1;
 }*/
-
-

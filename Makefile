@@ -10,8 +10,8 @@ info.o: info.c fatheader.h
 directories.o: directories.c fatheader.h
 	gcc -c directories.c
 
-utlity.o: utlity.c fatheader.h
-	gcc -c utlity.c
+utility.o: utility.c fatheader.h
+	gcc -c utility.c
 
 clean:
 	rm *~ *.o fileSys.exe

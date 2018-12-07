@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "./fatheader.h"
 
 char * goupper(char * s)	                                        // the directory names must be in upper case when stored in file system in utility.c
@@ -22,30 +23,6 @@ int getsecaddr(int sector, fatstruct f)                                         
         return ret;
 }
 
-void printdir(directory d){
-        int z;
-        if(d.numfiles == 0)
-        {
-                printf("Directory is empty");
-                return;
-        }
-
-        printf("======================");
-
-        for(z = 0; z < d.numfiles; z++)
-        {
-                file * j = &d.filesindir[z];
-                if(!isbitset(j->fattr,4))
-                        printf("%s: ", "F");
-                else
-                        printf("%s: ", "D");
-                printf("%s - ", j->fname);
-                printf("%i bytes", j->size);
-		 printf("(Cluster #: %i)\n", j->firstclusnum);
-        }
-        printf("===================");
-}
-
 char * noquotes(char * s)
 {
         char * retstr;
@@ -57,7 +34,7 @@ char * noquotes(char * s)
 int nextCluster(int c)			// grab next cluster
 {
 	int val;
-	f32Read(c, &val);
+	//f32Read(c, &val);
 	return val;
 }
 
@@ -118,20 +95,10 @@ bool closeAll()
 	return true;
 }
 
-
-
-unsigned short d_readsectors(unsigned long LBAaddress, void * buffer, unsigned short count, unsigned short BPSector)
-{
-  ssize_t size;
-  if (!disk_descriptor) return 0;
-  lseek(disk_descriptor, LBAaddress * BPSector, SEEK_SET);
-  size = read(disk_descriptor, buffer, count * BPSector);
-  return (unsigned short)(size / BPSector);
-}
 int f32_readFAT(int cluster, int *value, fatstruct fs)
 {
   int start = fs.BPB_RsvdSecCnt;
-  int BPSector = fs.BPB_BytesPerSec;
+  int BPSector = fs.BPB_BytsPerSec;
   int fSecClusters = BPSector / 4;
   int FATsize =  fs.BPB_FATSz32;
   int logicalLBA;
@@ -140,7 +107,7 @@ int f32_readFAT(int cluster, int *value, fatstruct fs)
  
   logicalLBA = start + ((cluster * 4) / BPSector); /* FAT sector that contains the cluster */
   index = (cluster % fSecClusters); /* index in the sector of FAT table */
-  int *cacheFsec =(int *)mallloc(sizeof(int) * fSecClusters);
+  int *cacheFsec =(int *)malloc(sizeof(int) * fSecClusters);
   val = cacheFsec[index] & 0x0fffffff;
   *value = val;
   return 0;
