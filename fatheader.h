@@ -29,48 +29,73 @@ typedef struct fatstruct{
   int BPB_RootClus:32;		// Cluster number of first cluster of root (should be 2)
 }__attribute__((packed, aligned(1))) fatstruct;
 
-typedef struct file                     // file struct
+typedef struct FATDate
 {
-        char fname[12];                 // im assuming we are going to need filename in this struct at some point should only be 12
-        int firstclusnum;               // number of first cluster for file
-        int mode;                       // 1 for read 2 for write 3 for read and write, -1 for not open?
-        int fattr;                      // file attribute
-        int size;                       // fiel size
+  int day:5;
+  int month:4;
+  int year:7;
+}__attribute__((packed, aligned(1))) FATDate;
 
-}file;
-
-typedef struct directory
+typedef struct FATTime
 {
-	char DIR_Name[12];
-	int DIR_Attr:8;
-	int DIR_NTRes:8;
-	int DIR_CrtTimeTenth:8;
-	int DIR_CrtTime:16;
-	int DIR_CrtDate:16;
-	int DIR_LstAccDate:16;
-	int DIR_FstClusHI:16;
-	int DIR_WrtTime:16;
-	int DIR_WrtDate:16;
-	int DIR_FstClusLO:16;
-	int DIR_FileSize:32;
-	int numfiles;
-	file filesindir[100];				// stores 100 files for make this dynamic later
-}__attribute__((packed, aligned(1))) directory;
+  int seconds:5;
+  int minutes:6;
+  int hours:5;
+}__attribute__((packed, aligned(1))) FATTime;
 
-typedef struct dir			// directory struct most likely wont need this one
+typedef struct shortDirEntry
 {
-	int numfiles;			// number of files in driectory
-	file filesindir[100];		// array of files in the directory could also dynamically allocate it if need be with file * filesindir
+  char Name[11];
+  int Attr:8;
+  int NTRes:8; //Unused in project
+  int CrtTimeTenth:8; //Milisecond stamp (actual tenth of seconds) for create time
+  FATTime CrtTime; //Creation Time
+  FATDate CrtDate;
+  FATDate LstAccDate;
+  int FstClusHI:16; //First Two Bytes of first cluster number
+  FATTime WrtTime;
+  FATDate WrtDate;
+  int FstClusLO:16; //Last Two Bytes of first cluster number
+  int FileSize:32; //File's size in bytes
+}__attribute__((packed, aligned(1))) shortDirEntry;
 
-}dir;
+typedef struct unicode {
+  char c1;
+  char c2;
+}__attribute__((packed, aligned(1))) unicode; //Might not need packed, but wanted to make sure it's byte aligned and not word aligned
+
+typedef struct longDirEntry
+{
+  int Order:8;
+  unicode Name1[5];
+  int Attr:8;
+  int Type:8;
+  int Checksum:8;
+  unicode Name2[6];
+  int FstClusLO:16;
+  unicode Name3[2];
+}__attribute__((packed, aligned(1))) longDirEntry;
+
+typedef union dirEntry
+{
+  shortDirEntry sh;
+  longDirEntry ln;
+} dirEntry;
+
+typedef struct fileData
+{
+  char fileName[260];
+  int size;
+  int firstCluster;
+} fileData;
+
+fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
 
 //utility functions
-void printdir(directory d);
 int isbitset(char ch, int x);
 int getsecaddr(int sector, fatstruct f);                                // need to pass in boot here for the boot sector info move to utility.c
 char * goupper(char * s);
 char * noquotes(char * s);
-directory getdir( int clustnum, fatstruct f);
 int  firstSecClus(fatstruct fs, int clus); 				// finds first "data" sector of cluster clus
 int getData(FILE * gfp, int offset, int size); 				// actually gets the info, given an offset and a size given in fatspec
 fatstruct getInfo(FILE * gfp); // get info from boot section needed for rest of program
@@ -127,7 +152,6 @@ void creat(FILE * disk, fatstruct fs, char * fname); // create file with fname
 void mkdir(FILE * disk, fatstruct fs, char * dname); // create directory with dname
 void rm(FILE * disk, fatstruct fs, char * fname); // remove file fname
 void rmdir(FILE * disk, fatstruct fs, char * dname); // remove directory dname
-void showdir(FILE * disk , directory dir);              // probably wont need disk here?
 int size(FILE * disk, fatstruct fs, char * fname); // prints size of the filename passed in
 /*{
 	file * f;
@@ -147,40 +171,6 @@ int size(FILE * disk, fatstruct fs, char * fname); // prints size of the filenam
 	printf("Size of the file %s is %d", fname, f->size);
 	return 1;
 
-}*/
-
-directory getdir(int clustnum, fatstruct f);					// pass boot in here need the info gets the contents of a directory files and sub directories included
-/*{	file dirfile;								// to be used as a file in the directory
-	int totalbytes = (f.BPB_BytsPerSec * f.BPB_SecPerClus);
-	directory retdir;							// dir to be returned
-	int firstdirsec;							// first sector of directory
-	int addrdir;								// address of the directory
-	int hiloclus;
-	int filecount;								// count of file in each directory
-
-	firstdirsec = firstSecClus(f,clustnum);
-	addrdir = getsecaddr(firstdirsec, f);
-
-	directory ds;
-        directory * dp = &ds;
-	int x;
-	for(x = 0; x < totalbytes; x+=32)
-	{
-        	fread(dp, sizeof(directory), 1, disk);
-		if( dp->DIR_Attr == 15)						// skip long entries for now
-			continue;
-
-		dp->DIR_FstClusHI << 16;
-		hiloclus = dp->DIR_FstClusHI | dp->DIR_FstClusLO;
-		strcpy(dirfile.fname, dp->DIR_Name);
-		dirfile.firstclusnum = hiloclus;
-		dirfile.size = dp->DIR_FileSize;
-		dirfile.fattr = dp->DIR_Attr;
-		retdir.filesindir[filecount++] = dirfile;
-	}
-
-	retdir.numfiles = filecount;
-	return retdir;
 }*/
 
 //int ls( FILE * disk, fatstruct boot, char * dirname, int currentdir);
@@ -236,5 +226,3 @@ int findopenfile(char * fname);						// finds a file in the open file list
         }
         return -1;
 }*/
-
-

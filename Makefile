@@ -1,5 +1,5 @@
-all: driver.o info.o utlity.o
-	gcc -o fileSys.exe driver.o info.o utlity.o
+all: driver.o info.o directories.o utility.o
+	gcc -o fileSys.exe driver.o info.o directories.o utility.o
 
 driver.o: driver.c fatheader.h
 	gcc -c driver.c
@@ -7,8 +7,11 @@ driver.o: driver.c fatheader.h
 info.o: info.c fatheader.h
 	gcc -c info.c
 
-utlity.o: utlity.c fatheader.h
-	gcc -c utlity.c
+directories.o: directories.c fatheader.h
+	gcc -c directories.c
+
+utility.o: utility.c fatheader.h
+	gcc -c utility.c
 
 clean:
 	rm *~ *.o fileSys.exe
