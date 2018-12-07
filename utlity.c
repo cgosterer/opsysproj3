@@ -54,10 +54,11 @@ char * noquotes(char * s)
         return retstr;
 }
 
-int nextClus(int c)			// grab next cluster
+int nextCluster(int c)			// grab next cluster
 {
-
-	return 0;
+	int val;
+	f32Read(c, &val);
+	return val;
 }
 
 bool addCluster(int end, int num)
@@ -68,7 +69,7 @@ bool addCluster(int end, int num)
 	return true;
 }
 
-bool removeClusters(int n)		// delete na nd all clusters after n, ste data to all zeroes
+bool removeCluster(int n)		// delete na nd all clusters after n, ste data to all zeroes
 {
 
 
@@ -78,14 +79,14 @@ bool removeClusters(int n)		// delete na nd all clusters after n, ste data to al
 
 // jons functions
 
-bool openfile(int clus, char * mode)
+bool openFile(int clus, char * mode)
 {
 
 
 	return true;
 }
 
-bool closefile(int clus)
+bool closeFile(int clus)
 {
 
 
@@ -109,7 +110,7 @@ bool canWrite( int clus)
 	return true;
 }
 
-bool closeall()
+bool closeAll()
 {
 
 
@@ -118,4 +119,30 @@ bool closeall()
 }
 
 
+
+unsigned short d_readsectors(unsigned long LBAaddress, void * buffer, unsigned short count, unsigned short BPSector)
+{
+  ssize_t size;
+  if (!disk_descriptor) return 0;
+  lseek(disk_descriptor, LBAaddress * BPSector, SEEK_SET);
+  size = read(disk_descriptor, buffer, count * BPSector);
+  return (unsigned short)(size / BPSector);
+}
+int f32_readFAT(int cluster, int *value, fatstruct fs)
+{
+  int start = fs.BPB_RsvdSecCnt;
+  int BPSector = fs.BPB_BytesPerSec;
+  int fSecClusters = BPSector / 4;
+  int FATsize =  fs.BPB_FATSz32;
+  int logicalLBA;
+  int index;
+  int val;
+ 
+  logicalLBA = start + ((cluster * 4) / BPSector); /* FAT sector that contains the cluster */
+  index = (cluster % fSecClusters); /* index in the sector of FAT table */
+  int *cacheFsec =(int *)mallloc(sizeof(int) * fSecClusters);
+  val = cacheFsec[index] & 0x0fffffff;
+  *value = val;
+  return 0;
+}
 
