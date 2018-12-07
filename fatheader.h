@@ -87,6 +87,7 @@ typedef struct fileData
   char fileName[260];
   int size;
   int firstCluster;
+  int attr;
 } fileData;
 
 typedef struct openfile
@@ -99,6 +100,7 @@ typedef struct openfile
 fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
 int removeDirectoryEntry(char * filename, FILE * disk, int clustersize);
 int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDirEntry insert);
+fileData getFileData(char * filename, FILE * disk, fatstruct fs, int currentDirectory);
 
 //utility functions
 int isbitset(char ch, int x);

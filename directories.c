@@ -45,6 +45,7 @@ void scrapeFileData(fileData * data, shortDirEntry dir)
   data->firstCluster = dir.FstClusHI;
   data->firstCluster = data->firstCluster << 16;
   data->firstCluster += dir.FstClusLO;
+  data->attr = dir.Attr;
 }
 
 //Given a file entry from a directory, get its name
@@ -100,6 +101,7 @@ fileData getFileFromDir(char * filename, FILE * disk, int clusterSize)
     ret.fileName[i] = '\0';
   ret.size = 0;
   ret.firstCluster = 0;
+  ret.attr = 0;
   
   for(i = 0; i<260; i++)
     checkName[i] = '\0';
