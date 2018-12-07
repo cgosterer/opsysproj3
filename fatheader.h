@@ -89,6 +89,13 @@ typedef struct fileData
   int firstCluster;
 } fileData;
 
+typedef struct openfile
+{
+	char name[260];
+	char mode[5];
+}openfile;
+
+
 fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
 int removeDirectoryEntry(char * filename, FILE * disk, int clustersize);
 int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDirEntry insert);
@@ -105,12 +112,12 @@ fatstruct getInfo(FILE * gfp); // get info from boot section needed for rest of 
 int nextCluster(int n);
 bool addCluster(int end, int n );
 bool removeCluster(int n);
-bool openFile(int clus, char * mode);
-bool closeFile(int clus);
-bool canRead(int clus);
-bool canWrite(int clus);
+bool openFile(char * fname, char * mode);
+bool closeFile(char * fname);
+bool canRead(FILE * disk, int clus);
+bool canWrite( FILE * disk,fatstruct fs,int clus);
 bool closeAll();
-
+int fnextclus( FILE * disk, int cluster, fatstruct fs);
 // end utility functions
 
 
@@ -149,7 +156,7 @@ void readsize(FILE * disk, fatstruct fs, char * fname, int offset, int size); //
 void writesize(FILE * disk, fatstruct fs, char * fname, int offset, int size, char * str ); // write to fname at offset, with size = sizem the string str
 void write(FILE * disk, fatstruct fs, char * fname, char * str); // the easy write function
 void close(FILE * disk, fatstruct fs, char * fname); // close open file with filename fname
-void open(FILE * disk, fatstruct fs, char * fname, char * mode); // should take in filname and a strinmg from command line for the mode ie open file123 R|RW|WR|W
+void open(FILE * disk, fatstruct fs,fileData fd, char * mode); // should take in filname and a strinmg from command line for the mode ie open file123 R|RW|WR|W
 void creat(FILE * disk, fatstruct fs, char * fname); // create file with fname
 void mkdir(FILE * disk, fatstruct fs, char * dname); // create directory with dname
 void rm(FILE * disk, fatstruct fs, char * fname); // remove file fname

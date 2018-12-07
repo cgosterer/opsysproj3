@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include "./fatheader.h"
 
+struct openfile openfiles[100];
+int opencounter= 0;
+
 char * goupper(char * s)	                                        // the directory names must be in upper case when stored in file system in utility.c
 {
         int t;
@@ -51,46 +54,66 @@ bool removeCluster(int n)		// delete na nd all clusters after n, ste data to all
 
 
 
-
+	return true;
 }
 
 // jons functions
+bool openFile(char * fname, char * mode)			//probably need to make an open file struct with both name and mode
+{
+	int x;
+	for (x = 0; x < 100; x++)
+	{
+		if(strcmp(openfiles[x].name,"\0") == 0)
+		{
+			strcpy( openfiles[x].name, fname);
+			strcpy( openfiles[x].mode, mode);
+			return true;
+		}
+	}
+	return false;
+}
 
-bool openFile(int clus, char * mode)
+bool closeFile(char * fname)
+{
+	int x = 0;
+	for (x = 0; x < 100; x++)
+	{
+		if(strcmp(openfiles[x].name,fname) == 0)
+		{
+			strcpy(openfiles[x].name, "\0");
+			strcpy(openfiles[x].mode, "\0");
+			return true;
+		}
+	}
+	return false;
+}
+
+bool canRead(FILE * disk, int clus)
 {
 
 
 	return true;
 }
 
-bool closeFile(int clus)
+
+bool canWrite(FILE * disk,fatstruct fs, int clus)
 {
+	shortDirEntry sh;
+	int FatOffset = clus * 4;
+        int ThisFatSecNum = fs.BPB_RsvdSecCnt + (FatOffset / fs.BPB_BytsPerSec);
+        int ThisFatEntOffset = FatOffset % fs.BPB_BytsPerSec;
+        int byteaddress = (ThisFatSecNum * fs.BPB_BytsPerSec) + ThisFatEntOffset;
+        //fsetpos(disk, byteaddress);		// set position of disk *
+        fread(&sh,sizeof(shortDirEntry), 1, disk);
 
-
-
-	return true;
-}
-
-bool canRead(int clus)
-{
-
-
-	return true;
-}
-
-
-bool canWrite( int clus)
-{
-
-
-
-	return true;
+	if(sh.Attr == 1)
+		return false;
+	else
+		return true;
 }
 
 bool closeAll()
 {
-
-
 
 	return true;
 }
@@ -113,22 +136,29 @@ int f32_readFAT(int cluster, int *value, fatstruct fs)
   return 0;
 }
 
-int fnextclus( FILE * disk, int cluster, fatstruct fs)
+int fnextclus( FILE * disk, int cluster, fatstruct fs)					// get next clsuter using this
 {
 	int FatOffset = cluster * 4;
 	int ThisFatSecNum = fs.BPB_RsvdSecCnt + (FatOffset / fs.BPB_BytsPerSec);
 	int ThisFatEntOffset = FatOffset % fs.BPB_BytsPerSec;
 	int byteaddress = (ThisFatSecNum * fs.BPB_BytsPerSec) + ThisFatEntOffset;
-	int nclus;
-	//fsetpos(disk, &byteaddress);
-	//fread(&nclus,sizeof(int), 1, &disk);
-	return nclus;
-
+	int * nclus;
+	//fsetpos(disk, byteaddress);
+	fread(&nclus,sizeof(int), 1, disk);
+	return *nclus;
 }
 
+void open(FILE * disk, fatstruct fs,fileData fd,  char * mode)
+{
+	openFile(fd.fileName, mode);
+}
 
+void close(FILE * disk, fatstruct fs, char * fname)
+{
+	closeFile(fname);
+	opencounter--;
 
-
+}
 
 
 
