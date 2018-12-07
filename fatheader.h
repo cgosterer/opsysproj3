@@ -90,6 +90,8 @@ typedef struct fileData
 } fileData;
 
 fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
+int removeDirectoryEntry(char * filename, FILE * disk, int clustersize);
+int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDirEntry insert);
 
 //utility functions
 int isbitset(char ch, int x);
