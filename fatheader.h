@@ -20,23 +20,67 @@ typedef struct fatstruct{
   int BPB_RootClus:32;		// Cluster number of first cluster of root (should be 2)
 }__attribute__((packed, aligned(1))) fatstruct;
 
-typedef struct dir			// directory struct;
+typedef struct FATDate
 {
-	int numfiles;			// number of files in driectory
+  int day:5;
+  int month:4;
+  int year:7;
+}__attribute__((packed, aligned(1))) FATDate;
 
-
-}dir;
-
-typedef struct file			// file struct
+typedef struct FATTime
 {
-	char fname[60];			// im assuming we are going to need filename in this struct at some point
-	int firstclusnum;
-	int mode;			// 1 for read 2 for write 3 for read and write
-	int fattr;			// file attribute
-	int size;			// fiel size
+  int seconds:5;
+  int minutes:6;
+  int hours:5;
+}__attribute__((packed, aligned(1))) FATTime;
 
-}file;
+typedef struct shortDirEntry
+{
+  char Name[11];
+  int Attr:8;
+  int NTRes:8; //Unused in project
+  int CrtTimeTenth:8; //Milisecond stamp (actual tenth of seconds) for create time
+  FATTime CrtTime; //Creation Time
+  FATDate CrtDate;
+  FATDate LstAccDate;
+  int FstClusHI:16; //First Two Bytes of first cluster number
+  FATTime WrtTime;
+  FATDate WrtDate;
+  int FstClusLO:16; //Last Two Bytes of first cluster number
+  int FileSize:32; //File's size in bytes
+}__attribute__((packed, aligned(1))) shortDirEntry;
 
+typedef struct unicode {
+  char c1;
+  char c2;
+}__attribute__((packed, aligned(1))) unicode; //Might not need packed, but wanted to make sure it's byte aligned and not word aligned
+
+typedef struct longDirEntry
+{
+  int Order:8;
+  unicode Name1[5];
+  int Attr:8;
+  int Type:8;
+  int Checksum:8;
+  unicode Name2[6];
+  int FstClusLO:16;
+  unicode Name3[2];
+}__attribute__((packed, aligned(1))) longDirEntry;
+
+typedef union dirEntry
+{
+  shortDirEntry sh;
+  longDirEntry ln;
+} dirEntry;
+
+typedef struct fileData
+{
+  char fileName[260];
+  int size;
+  int firstCluster;
+} fileData;
+
+fileData getFileFromDir(char * filename, FILE * disk, int clusterSize);
 
 int  firstSecClus(fatstruct fs, int clus); // finds first "data" sector of cluster clus
 int getData(FILE * gfp, int offset, int size); // actually gets the info, given an offset and a size given in fatspec
