@@ -14,15 +14,19 @@ Jonathan Molina:
 		Worked with Chris to build several Utility functions
 
 Steven Perez:
-Set up parser
-
+		Set up parser
+		Created structs for reading directory information from disk
+		Created struct for reading boot section of disk
+		Worked modifying data sections of directories
+		Overall organization
 
 Description:
-
+		Basic attempt at creating an itneractive file system
 
 
 Known Issues:
-As the project continues, we have to make sure that the exit command is updated to deallocate any other memory allocations we make (like the open file list).
-
+		ONLY FUNCTIONS WORKING ARE: info, exit
+		NO OTHER FUNCTIONS IMPLEMENTED!
+		All other commands will only reprompt the user
 
 Extra Credit:
