@@ -116,8 +116,8 @@ bool addCluster(int end, int n );
 bool removeCluster(int n);
 bool openFile(char * fname, char * mode);
 bool closeFile(char * fname);
-bool canRead(FILE * disk, int clus);
-bool canWrite( FILE * disk,fatstruct fs,int clus);
+bool canRead(FILE * disk, char * name, fatstruct fs, int currdir);
+bool canWrite( FILE * disk, char * name, fatstruct fs, int cwd);
 bool closeAll();
 int fnextclus( FILE * disk, int cluster, fatstruct fs);
 // end utility functions
