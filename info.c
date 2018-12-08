@@ -49,6 +49,8 @@ void info(fatstruct fs){
 	printf("BPB_SecPerClus: %d\n", fs.BPB_SecPerClus);
 	printf("BPB_RsvdSecCnt: %d\n", fs.BPB_RsvdSecCnt);
 	printf("BPB_NumFATs: %d\n", fs.BPB_NumFATs);
+	printf("BPB_TotSec32: %d\n", fs.BPB_TotSec32);
 	printf("BPB_FATSz32: %d\n", fs.BPB_FATSz32);
+	printf("BPB_FSVer: %d\n", fs.BPB_FSVer);
 	printf("BPB_RootClus: %d\n", fs.BPB_RootClus);
 }
