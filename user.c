@@ -16,7 +16,7 @@ int ls(FILE* disk, int currentDirectory, fatstruct fs, char * dirname)
     }
   do
     {
-      listDirClusterFiles(cluster, disk, fs.BPB_BytsPerSec * fs.BPB_SecPerClus);
+      listDirClusterFiles(disk, fs.BPB_BytsPerSec * fs.BPB_SecPerClus);
       cluster = fnextclus(disk, cluster, fs);
     }while(cluster != 0xFFFFFFFF);
   return 0;

@@ -5,7 +5,7 @@
 
 char ** parseLine();
 char ** addToken(char ** bucket, char * token);
-int executeCommand(char ** tokens, FILE * disk, fatstruct boot);
+int executeCommand(char ** tokens, FILE * disk, fatstruct boot, int cwd);
 void freebucket(char ** tokens);
 void prompt();
 
@@ -13,14 +13,14 @@ int main() {
   char ** tokens;
   FILE * disk;
   int currentdirclus;             // int for the cluster of current directory
-  int cwd;                  // the current working directory's cluster number
+  int cwd=2;                  // the current working directory's cluster number
 
 
   disk = fopen("fat32.img", "rb+");
   fatstruct boot = getInfo(disk);
   while(1) { //Infinite loop until break condition
     tokens = parseLine();
-    if(executeCommand(tokens, disk, boot)) //Execute Command returns 1 only on exit
+    if(executeCommand(tokens, disk, boot, cwd)) //Execute Command returns 1 only on exit
       break;
     freebucket(tokens);
     tokens = 0;
@@ -92,7 +92,7 @@ void freebucket(char ** bucket)
   bucket = NULL;
 }
 
-int executeCommand(char ** tokens, FILE * disk, fatstruct boot)
+int executeCommand(char ** tokens, FILE * disk, fatstruct boot, int cwd)
 {
   printf("Executing command %s\n", tokens[0]);
   if(strcmp(tokens[0], "exit") == 0)
@@ -104,6 +104,13 @@ int executeCommand(char ** tokens, FILE * disk, fatstruct boot)
   else if(strcmp(tokens[0], "info") == 0)
     {
       info(boot);
+    }
+  else if(strcmp(tokens[0], "ls") == 0)
+    {
+      if(tokens[1] != NULL)
+	ls(disk, cwd, boot, tokens[1]);
+      else
+	printf("Please give a directory (use ls . for cwd)\n");
     }
   return 0;
 }

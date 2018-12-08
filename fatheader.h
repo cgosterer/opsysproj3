@@ -124,8 +124,8 @@ int fnextclus( FILE * disk, int cluster, fatstruct fs);
 
 
 void info(fatstruct fs); // displays the info per first function in slides
-int cd(char * dirname, fatstruct f); //Change directory to dirname, returns first cluster of directory
-int ls(FILE * disk, fatstruct fs, char * dirname); // basic ls command like usual command line removed int currentdir from parameter list
+int cd(FILE * disk, int currentDirectory, fatstruct fs, char * dirname); //Change directory to dirname, returns first cluster of directory
+int ls(FILE * disk, int currentDirectory, fatstruct fs, char * dirname); // basic ls command like usual command line removed int currentdir from parameter list
 void read(FILE * disk, fatstruct fs, char * fname); // read file with filename fname
 void readsize(FILE * disk, fatstruct fs, char * fname, int offset, int size); // read filename at offset , read size bytes from offset
 void writesize(FILE * disk, fatstruct fs, char * fname, int offset, int size, char * str ); // write to fname at offset, with size = sizem the string str
