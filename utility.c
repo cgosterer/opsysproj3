@@ -117,25 +117,6 @@ bool closeAll()
 	return true;
 }
 
-/*
-int f32_readFAT(int cluster, int *value, fatstruct fs)
-{
-  int start = fs.BPB_RsvdSecCnt;
-  int BPSector = fs.BPB_BytsPerSec;
-  int fSecClusters = BPSector / 4;
-  int FATsize =  fs.BPB_FATSz32;
-  int logicalLBA;
-  int index;
-  int val;
-  logicalLBA = start + ((cluster * 4) / BPSector); // FAT sector that contains the cluster 
-  index = (cluster % fSecClusters); // index in the sector of FAT table 
-  int *cacheFsec =(int *)malloc(sizeof(int) * fSecClusters);
-  val = cacheFsec[index] & 0x0fffffff;
-  *value = val;
-  return 0;
-}
-*/
-
 
 int fnextclus( FILE * disk, int cluster, fatstruct fs)					// get next clsuter using this
 {

@@ -94,7 +94,7 @@ void freebucket(char ** bucket)
 
 int executeCommand(char ** tokens, FILE * disk, fatstruct boot, int cwd)
 {
-  printf("Executing command %s\n", tokens[0]);
+  //printf("Executing command %s\n", tokens[0]);
   if(strcmp(tokens[0], "exit") == 0)
     {
       freebucket(tokens);
@@ -105,12 +105,12 @@ int executeCommand(char ** tokens, FILE * disk, fatstruct boot, int cwd)
     {
       info(boot);
     }
-  else if(strcmp(tokens[0], "ls") == 0)
-    {
-      if(tokens[1] != NULL)
-	ls(disk, cwd, boot, tokens[1]);
-      else
-	printf("Please give a directory (use ls . for cwd)\n");
-    }
+  //else if(strcmp(tokens[0], "ls") == 0)
+    //{
+      //if(tokens[1] != NULL)
+	//ls(disk, cwd, boot, tokens[1]);
+      //else
+	//printf("Please give a directory (use ls . for cwd)\n");
+    //}
   return 0;
 }
