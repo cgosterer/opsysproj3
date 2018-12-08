@@ -101,6 +101,7 @@ fileData getFileFromDir(char * filename, FILE * disk, int clusterSize, int direc
 int removeDirectoryEntry(char * filename, FILE * disk, int clustersize, int directoryCluster, fatstruct fs);
 int createDirectoryEntry(char * filename, FILE * disk, int clustersize, shortDirEntry insert);
 fileData getFileData(char * pathname, FILE * disk, fatstruct fs, int currentDirectory);
+void listDirClusterFiles(FILE * disk, int clustersize);
 
 //utility functions
 int isbitset(char ch, int x);

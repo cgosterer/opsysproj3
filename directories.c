@@ -202,7 +202,7 @@ fileData getFileFromDir(char * filename, FILE * disk, int clusterSize, int first
 	return fd;
       }
     else
-      firstCluster = nextCluster(firstCluster);
+      firstCluster = fnextclus(disk, firstCluster, fs);
   } while(firstCluster != 0xFFFFFFFF);
 }
 
@@ -211,6 +211,7 @@ fileData getFileData(char* filename, FILE * disk, fatstruct fs, int currentDirec
   int i, newDir;
   char * subName;
   fileData fd;
+  filename = goupper(filename);
   for(i = 0; i < strlen(filename) && filename[i] != '/'; i++){}
   if(i == strlen(filename))
     {
@@ -235,6 +236,24 @@ fileData getFileData(char* filename, FILE * disk, fatstruct fs, int currentDirec
 	  fd.firstCluster = 0;
 	  fd.attr = 0;
 	  return fd;
+	}
+    }
+}
+
+void listDirClusterFiles(FILE * disk, int clustersize)
+{
+  int i;
+  dirEntry fd;
+  char fileName[260];
+  for(i = 0; i < clustersize; i+=32, fseek(disk, 32, SEEK_CUR))
+    {
+      fread(&fd, 32, 1, disk);
+      if(fd.ln.Order == 0)
+	return;
+      if(fd.ln.Order != 0xE5)
+	{
+	  getFileName(fileName, disk, fd);
+	  printf("%s\n", fileName);
 	}
     }
 }
